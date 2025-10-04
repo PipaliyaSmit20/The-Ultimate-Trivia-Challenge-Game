@@ -90,13 +90,26 @@ def run_quiz(questions):
     print(" Quiz Over! \n")
     print(f" You score {score} out of {len(questions)}. ")
 
+
 def main():
     print("\n Welcome to The Ultimate Command-Line Trivia Challenge! \n")
     print(" It's great way to test your knowledge! \n")
 
+
+
+
+while True:
     settings = get_game_settings()
     questions_list = fetch_questions(settings)
     if questions_list:
         run_quiz(questions_list)
+    play_again = input(" Do you like to play again? (yes/no): ").strip().lower()
+    if play_again == 'yes':
+        print()
+        continue
+    else:
+        print("\n Thanks for playing! Goodbye! \n")
+        break
+
 if __name__ == "__main__":
     main()
