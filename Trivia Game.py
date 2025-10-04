@@ -1,4 +1,3 @@
-from ast import main
 import requests
 import random
 import html
@@ -35,8 +34,6 @@ def get_game_settings():
             break
         else:
             print("Invalid input. Please enter a valid category.")
-            exit()
-
     print()
     
     while True:
