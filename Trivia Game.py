@@ -95,9 +95,6 @@ def main():
     print("\n Welcome to The Ultimate Command-Line Trivia Challenge! \n")
     print(" It's great way to test your knowledge! \n")
 
-
-
-
 while True:
     settings = get_game_settings()
     questions_list = fetch_questions(settings)
