@@ -50,7 +50,7 @@ def get_game_settings():
 
 def fetch_questions(settings):
 
-    response = requests.get(f"https://opentdb.com/api.php?amount={settings['amount']}&category={settings['category']}&difficulty={settings['difficulty']}&type=multiple").json()
+    response = requests.get(f"https://opentdb.com/api.php?amount={settings['amount']}&category={settings['category']}&difficulty={settings['difficulty']}").json()
     
     try:
         questions = response['results']
@@ -71,23 +71,32 @@ def run_quiz(questions):
     for i, q in enumerate(questions, 1):
         print(f"❓ Question {i}: {html.unescape(q['question'])} ")
 
-        options = q['incorrect_answers']
-        correct_answer = html.unescape(q['correct_answer'])
-        options.append(correct_answer)
-        random.shuffle(options)
+        if q['type'] == 'multiple':
+            options = q['incorrect_answers']
+            correct_answer = html.unescape(q['correct_answer'])
+            options.append(correct_answer)
+            random.shuffle(options)
 
-        option_letter = ['A', 'B', 'C', 'D']
-        for letter, option in zip(option_letter, options):
-            print(f"  {letter}. {html.unescape(option)} ")
-        correct_letter = option_letter[options.index(correct_answer)]
-        answer = input(" Your answer: ").strip().upper()
-        print()
+            option_letter = ['A', 'B', 'C', 'D']
+            for letter, option in zip(option_letter, options):
+                print(f"  {letter}. {html.unescape(option)} ")
+            correct_letter = option_letter[options.index(correct_answer)]
+            answer = input(" Your answer: ").strip().upper()
+            if answer == correct_letter:
+                print("✅ Correct! \n")
+                score += 1
+            else: 
+                print(f"❌ Wrong! The correct answer was {correct_letter}.{correct_answer} \n")
 
-        if answer == correct_letter:
-            print("✅ Correct! \n")
-            score += 1
-        else: 
-            print(f"❌ Wrong! The correct answer was {correct_letter}.{correct_answer} \n")
+        else :
+            correct_answer = q['correct_answer']
+            user_answer = input(" Your answer (True/False): ").strip().capitalize()  
+            
+            if user_answer == correct_answer:
+                print("✅ Correct! \n")
+                score += 1
+            else: 
+                print(f"❌ Wrong! The correct answer was {correct_letter}.{correct_answer} \n")
 
     print(" Quiz Over! \n")
     print(f" You score {score} out of {len(questions)}. ")
