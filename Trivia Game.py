@@ -176,7 +176,7 @@ def main():
     category_dict = get_categories()
 
     while True:
-        hints_available = 1 # Reset hints for each new game
+        hints_available = 2 # Reset hints for each new game
         settings = get_game_settings(category_dict)
         questions_list = fetch_questions(settings)
 
