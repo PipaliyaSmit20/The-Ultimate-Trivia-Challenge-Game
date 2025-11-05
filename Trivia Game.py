@@ -1,6 +1,7 @@
 import requests
 import random
 import html
+import json
 
 def get_categories():
     print("Fetching categories...")
@@ -158,35 +159,66 @@ def run_quiz(questions, hints_available):
     print(f"📊 You scored {score} out of {len(questions)}.")
     return score, hints_available
 
-def load_highscore():
+def load_leaderboard(filename="leaderboard.json"):
     try:
-        with open('highscore.txt', 'r') as file:
-            return int(file.read())
-    except (FileNotFoundError, ValueError):
-        return 0
+        with open(filename, 'r') as file:
+            return json.load(file)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return [] # Return an empty list if file not found or is empty
 
-def save_highscore(new_highscore):
-    with open('highscore.txt', 'w') as file:
-        file.write(str(new_highscore))
+def update_leaderboard(player_name, score, filename="leaderboard.json", max_scores=10):
+    """Adds a new score to the leaderboard and saves it."""
+    leaderboard = load_leaderboard(filename)
+    
+    leaderboard.append({"name": player_name, "score": score})
+    
+    sorted_board = sorted(leaderboard, key=lambda item: item['score'], reverse=True)
+    
+    top_scores = sorted_board[:max_scores]
+    
+    # Write the new leaderboard back to the file
+    try:
+        with open(filename, 'w') as file:
+            json.dump(top_scores, file, indent=4)
+    except IOError as e:
+        print(f"Error saving leaderboard: {e}")
 
 def main():
     print("\n🧠 Welcome to The Ultimate Command-Line Trivia Challenge! 🎮\n")
+
+    player_name = input("Enter your name: ").strip()
+    if not player_name:
+        player_name = "Player 1"
     
-    high_score = load_highscore()
     category_dict = get_categories()
 
     while True:
         hints_available = 2 # Reset hints for each new game
+        leaderboard = load_leaderboard()
+        if leaderboard:
+            high_score  = leaderboard[0]['score']
+            high_score_name = leaderboard[0]['name']
+            print(f"\n🏅 The current high score {high_score} set by {high_score_name} 🏅\n")
+        else:
+            high_score = 0
+            print("🏅Be the first to set a high score!")
+
         settings = get_game_settings(category_dict)
         questions_list = fetch_questions(settings)
 
         if questions_list:
             current_score, hints_available = run_quiz(questions_list, hints_available)
             print(f"\nThe current high score is: {high_score}.")
+
             if current_score > high_score:
                 print("🏆✨ Congratulations! You've set a new high score! ✨🏆")
                 high_score = current_score
-                save_highscore(high_score)
+                update_leaderboard(player_name, current_score)
+
+            print("\n--- 🏆 Top 5 Scores 🏆 ---")
+            new_leaderboard = load_leaderboard() # Re-load to get the fresh list
+            for i, entry in enumerate(new_leaderboard[:5], 1):
+                print(f"  {i}. {entry['name']}: {entry['score']} points")
 
         play_again = input("\n🤔 Play again? (yes/no): ").strip().lower()
         if play_again not in ('yes', 'y'):
