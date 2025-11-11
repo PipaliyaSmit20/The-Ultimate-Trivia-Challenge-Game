@@ -170,7 +170,17 @@ def update_leaderboard(player_name, score, filename="leaderboard.json", max_scor
     """Adds a new score to the leaderboard and saves it."""
     leaderboard = load_leaderboard(filename)
     
-    leaderboard.append({"name": player_name, "score": score})
+    #Update existing player's score if higher and add new player also
+    player_found = False
+
+    for entry in leaderboard:
+        if entry['name'] == player_name:
+            player_found = True
+            if score > entry['score']:
+                entry['score'] = score
+            break
+    if not player_found:
+        leaderboard.append({"name": player_name, "score": score})
     
     sorted_board = sorted(leaderboard, key=lambda item: item['score'], reverse=True)
     
