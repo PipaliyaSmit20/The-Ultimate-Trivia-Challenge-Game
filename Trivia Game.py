@@ -223,6 +223,8 @@ def main():
             if current_score > high_score:
                 print("🏆✨ Congratulations! You've set a new high score! ✨🏆")
                 high_score = current_score
+
+            if current_score > 0:
                 update_leaderboard(player_name, current_score)
 
             print("\n--- 🏆 Top 5 Scores 🏆 ---")
