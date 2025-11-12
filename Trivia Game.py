@@ -1,6 +1,7 @@
 import requests
 import random
 import html
+import sqlite3
 import json
 
 def get_categories():
